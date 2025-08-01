@@ -13,7 +13,9 @@ from talk_agent import get_agent_and_checkpointer
 from langchain_core.messages import HumanMessage, AIMessage
 from get_character_full_data import get_db, SimpleDatabase
 import re
-
+picture_dir_name='talk_picture'
+if not os.path.exists(picture_dir_name):
+    os.makedirs(picture_dir_name)
 # --- 应用和数据库配置 ---
 app = Flask(__name__, static_folder='static', static_url_path='')
 basedir = os.path.abspath(os.path.dirname(__file__))
