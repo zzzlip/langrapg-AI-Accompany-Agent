@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Companion</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- 登录/注册视图 -->
+    <div id="auth-view" class="view active-view">
+        <div class="auth-container">
+            <div id="login-form-container">
+                <h2>登录</h2>
+                <form id="login-form">
+                    <input type="text" id="login-username" placeholder="用户名" required>
+                    <input type="password" id="login-password" placeholder="密码" required>
+                    <button type="submit">登录</button>
+                </form>
+                <p>还没有账户？ <a href="#" id="show-register">立即注册</a></p>
+            </div>
+            <div id="register-form-container" style="display: none;">
+                <h2>注册</h2>
+                <form id="register-form">
+                    <input type="text" id="register-username" placeholder="用户名" required>
+                    <input type="email" id="register-email" placeholder="邮箱" required>
+                    <input type="password" id="register-password" placeholder="密码" required>
+                    <button type="submit">注册</button>
+                </form>
+                <p>已有账户？ <a href="#" id="show-login">返回登录</a></p>
+            </div>
+            <p id="auth-error" class="error-message"></p>
+        </div>
+    </div>
+
+    <!-- 角色选择/创建视图 -->
+    <div id="character-view" class="view">
+        <div class="character-container">
+            <h2>我的角色</h2>
+            <div id="character-list" class="character-list">
+                <!-- 角色卡片将在这里动态生成 -->
+            </div>
+            <button id="show-create-character-form-btn" class="primary-btn"><i class="fas fa-plus"></i> 创建新角色</button>
+            <button id="logout-btn" class="secondary-btn">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 角色创建表单 (模态框) -->
+    <div id="create-character-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">×</span>
+            <h2>创建新角色</h2>
+            <form id="create-character-form">
+                <div class="avatar-upload">
+                    <img id="avatar-preview" src="assets/default_avatar.png" alt="Avatar Preview">
+                    <input type="file" id="avatar-input" accept="image/*">
+                    <label for="avatar-input">选择头像</label>
+                </div>
+                <input type="text" id="char-name" placeholder="角色名字" required>
+                <textarea id="char-desc" placeholder="角色简介 (例如：一个温柔、充满好奇心的画家)" required></textarea>
+                <textarea id="char-first-talk" placeholder="开场白 (例如：你好，很高兴认识你，今天过得怎么样？)" required></textarea>
+                <button type="submit">创建</button>
+            </form>
+            <p id="create-char-error" class="error-message"></p>
+        </div>
+    </div>
+
+    <!-- 主聊天应用视图 -->
+    <div id="app-view" class="view">
+        <header class="app-header">
+            <button id="back-to-characters-btn"><i class="fas fa-chevron-left"></i></button>
+            <div class="current-char-info">
+                <img id="chat-avatar" src="assets/default_avatar.png" alt="Avatar">
+                <h2 id="chat-character-name">...</h2>
+            </div>
+            <div class="header-buttons">
+                <button id="open-moments-btn" title="朋友圈"><i class="fas fa-images"></i></button>
+                <button id="open-diary-btn" title="日记"><i class="fas fa-book-open"></i></button>
+            </div>
+        </header>
+        <main id="chat-window" class="chat-window"></main>
+        <footer class="chat-input-area">
+            <textarea id="message-input" placeholder="输入消息..." rows="1"></textarea>
+            <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+        </footer>
+    </div>
+
+    <!-- 朋友圈模态框 -->
+    <div id="moments-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content moments-content">
+            <span class="close-modal">×</span>
+            <div class="moments-header">
+                <img id="moments-avatar" src="assets/default_avatar.png" alt="">
+                <h3><span id="moments-char-name"></span>的朋友圈</h3>
+            </div>
+            <div id="moments-feed" class="moments-feed">
+                <!-- 动态将在这里动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 日记模态框 -->
+    <div id="diary-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content diary-content">
+            <span class="close-modal">×</span>
+            <h3><span id="diary-char-name"></span>的日记</h3>
+            <div id="diary-entries" class="diary-entries">
+                <!-- 日记条目将在这里动态生成 -->
+            </div>
+            <!-- START OF MODIFICATION: Diary Navigation -->
+            <div id="diary-navigation" class="diary-navigation">
+                <button id="diary-prev-btn">< 上一页</button>
+                <span id="diary-page-indicator"></span>
+                <button id="diary-next-btn">下一页 ></button>
+            </div>
+            <!-- END OF MODIFICATION -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
