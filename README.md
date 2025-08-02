@@ -19,7 +19,14 @@ This is a Flask-based AI role-playing agent developed using the langgraph agent 
 - AI character diary system
 - The generation of Moments and diaries is managed using different threads in langgraph, allowing parallel generation without affecting chat performance. (Alternatively, a multi-agent architecture can be used for complex tasks, but since diary and Moments generation is relatively simple, merging them into one agent avoids the complexity of state transfer.)
 - I use the `gemeni_pro` model and a COT-style prompt architecture to deeply analyze short-term and long-term memories, better understand key events and character personalities, and capture chat habits for writing Moments and diaries.
+![Project Image](朋友圈1.png)
 
+
+
+![Project Image](朋友圈2.png)
+
+
+![Project Image](日记图片.png)
 ### 3. Memory System
 - The memory module is divided into two parts: 1. Short-term memory 2. Dormant long-term memory.
 - Short-term conversation memory: The threshold is set to 400 dialogue entries. Once exceeded, the memory is gradually cleared. Every 100 messages form a memory block, and the LLM generates several tags for each block, which are stored in the memory database.
