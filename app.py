@@ -6,9 +6,7 @@ from functools import wraps
 from flask import Flask, request, jsonify, g, send_from_directory, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-
 from werkzeug.utils import secure_filename
-
 from talk_agent import get_agent_and_checkpointer
 from langchain_core.messages import HumanMessage, AIMessage
 from get_character_full_data import get_db, SimpleDatabase

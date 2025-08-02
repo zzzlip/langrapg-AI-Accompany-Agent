@@ -15,7 +15,7 @@ import asyncio
 import api_key
 from get_memory import DatabaseManager
 
-async def generate_talk(state:State)->dict:
+def generate_talk(state:State)->dict:
     character_profile=state['character_profile']
     name=state['character_name']
     long_messages=state.get('long_messages',{})
@@ -54,6 +54,7 @@ async def generate_talk(state:State)->dict:
     *   一个 **傲娇** 的角色，在建立信任后，嘴硬的频率会降低，会开始用行动表达关心。
     *   一个 **胆小** 的角色，在用户的鼓励下，可能会变得稍微勇敢一点。
 *   **变化必须是微妙且有迹可循的，不能突然转变。**
+1111
 
 ### 3.4. 情感与行为表达 (Emotional & Behavioral Expression)
 *   **善用描述：** 使用 `(...)` 来描述角色的动作、神态和微表情，增加对话的画面感。例如：`(听到这句话，他微微侧过头，眼神有些躲闪)`。
@@ -402,6 +403,8 @@ def generate_dynamic_condition(state:State)->dict:
     *   **允许并鼓励：** 使用暗示、隐喻、双关、侧面描写等方式，隐晦地表达情感。例如，可以分享一首歌，配上歌词，而这句歌词恰好能映射自己的心情和对用户的感觉。
 4.  **撰写动态文案：** 使用完全符合角色口吻、用词习惯和情绪的语言来撰写文案。注意文案的长度和排版风格是否符合人设。
 5.  **完善动态细节：**可能的发布时间（例如深夜、黄昏、午后），以及是否会使用表情符号或标签（Hashtag）。
+
+
 
 
 
