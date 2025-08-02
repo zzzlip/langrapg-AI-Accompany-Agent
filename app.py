@@ -6,14 +6,18 @@ from functools import wraps
 from flask import Flask, request, jsonify, g, send_from_directory, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+
 from werkzeug.utils import secure_filename
+
 from talk_agent import get_agent_and_checkpointer
+
+picture_dir_name = 'talk_picture'
+if not os.path.exists(picture_dir_name):
+    os.makedirs(picture_dir_name)
 from langchain_core.messages import HumanMessage, AIMessage
 from get_character_full_data import get_db, SimpleDatabase
 import re
-picture_dir_name='talk_picture'
-if not os.path.exists(picture_dir_name):
-    os.makedirs(picture_dir_name)
+
 # --- 应用和数据库配置 ---
 app = Flask(__name__, static_folder='static', static_url_path='')
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -54,6 +58,14 @@ class Character(db.Model):
     first_talk = db.Column(db.String(500), nullable=False)
     avatar_path = db.Column(db.String(200), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+
+def get_true_filename(image_path,user_id):
+    # 检查image_path是否为None
+    if image_path is None:
+        return ""
+    temp_token = generate_temp_access_token(user_id, image_path)
+    return "/picture/{a}?token={temp_token}".format(a=image_path.replace('\\', '/'), temp_token=temp_token)
 
 
 # --- 认证与辅助函数 ---
@@ -133,13 +145,7 @@ def serve_picture_file(filename):
         return "访问令牌无效或已过期", 403
 
 
-def get_true_filename(image_path):
-    user = g.current_user
-    # 检查image_path是否为None
-    if image_path is None:
-        return ""
-    temp_token = generate_temp_access_token(user.id, image_path)
-    return "/picture/{a}?token={temp_token}".format(a=image_path.replace('\\', '/'), temp_token=temp_token)
+
 
 
 # --- API 路由 ---
@@ -327,6 +333,7 @@ def start_talk():
 
             print("给代理的输入:", input_data)
 
+
             ai_full_message = ''
             # 使用同步的 agent.stream 方法
             for chunk in agent.stream(input_data, thread_config, stream_mode="updates"):
@@ -341,7 +348,7 @@ def start_talk():
                     image_path = chunk['generate_talk_picture']['picture_path']
 
                     if image_path:
-                        image_url=get_true_filename(image_path)
+                        image_url=get_true_filename(image_path,conversation_id)
                         # 在数据库中用图片URL更新AI消息
                         app_db.add_chat_message(conversation_id=conversation_id, message_type='ai',
                                                 content=ai_full_message, image_url=image_path)
@@ -371,8 +378,10 @@ def start_talk():
                     if 'generate_dynamic_condition_picture' in chunk:
                         picture_paths = chunk['generate_dynamic_condition_picture']['dynamic_condition_picture_path']
                         for k, v_path in zip(moment_message.keys(), picture_paths):
-                            app_db.add_social_post(conversation_id, moment_message[k]['scheme'],
-                                                   moment_message[k]['label'], moment_message[k]['time'], v_path)
+                            # 在应用上下文中执行数据库操作
+                            with app.app_context():
+                                app_db.add_social_post(conversation_id, moment_message[k]['scheme'],
+                                                       moment_message[k]['label'], moment_message[k]['time'], v_path)
                 yield sse_format({'type': 'event', 'event_name': 'new_moment_available'})
 
             # 检查是否生成日记
@@ -383,7 +392,9 @@ def start_talk():
                 for chunk in agent.stream(final_state, diary_thread_config, stream_mode="updates"):
                     if 'generate_diary' in chunk:
                         diary_content = chunk['generate_diary']['diary']
-                        app_db.add_diary_entry(conversation_id, diary_content)
+                        # 在应用上下文中执行数据库操作
+                        with app.app_context():
+                            app_db.add_diary_entry(conversation_id, diary_content)
                 yield sse_format({'type': 'event', 'event_name': 'new_diary_available'})
 
         except Exception as e:
@@ -421,7 +432,7 @@ def get_chat_history(character_id):
     for h in history:
         if h['image_url']:
             path = extract_path(h['image_url'])
-            img_url=get_true_filename( path)
+            img_url=get_true_filename( path,conversation_id)
             h['image_url'] = img_url
         full_history.append(h)
     return jsonify(full_history)
@@ -444,7 +455,7 @@ def get_dynamic_text():
             path = extract_path(h['image_url'])
             # 检查path是否为None
             if path is not None:
-                img_url = get_true_filename(path)
+                img_url = get_true_filename(path,character_db_id)
                 h['image_url'] = img_url
             else:
                 h['image_url'] = ""

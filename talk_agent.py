@@ -115,7 +115,7 @@ def jude_path(state:State)->Literal['get_long_message','generate_diary','generat
 
 def get_long_message(state:State)->dict:
     short_messages=state['short_messages'][:-1]
-    user_ask=short_messages[-1]
+    user_ask=state['short_messages'][-1]
     tags=db.get_all_tags(state['user_id'])
     prompt_template="""
     # 角色与任务
@@ -235,6 +235,7 @@ AI: 我们提到了预算将在下周的会议上进行初步讨论。
     if isinstance(answer, dict):
         tags=answer['tags']
         if tags:
+            user_ask=user_ask.content
             long_messages[user_ask]=db.get_memory(state['user_id'],tags)
     return {'long_messages': long_messages}
 

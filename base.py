@@ -20,7 +20,7 @@ llm_google = ChatOpenAI(
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
     api_key=api_key.google_api,
     model="gemini-2.5-flash",
-    temperature=0.8,
+    temperature=0.6,
     streaming=True,
 )
 llm_google_pro = ChatOpenAI(
